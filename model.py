@@ -39,3 +39,4 @@ def predict(data:request_body) :
 
 #predicting the class 
 class_idx=clf.predict(test_data)[0]
+return { 'class ' : iris.target_names[class_idx]}
