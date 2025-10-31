@@ -19,3 +19,22 @@ y=iris.target
 
 clf=GaussianNB()
 clf.fit(x,y)
+
+#creating anj end point to receive the data 
+@app.post('/predict')
+
+def predict(data:request_body) : 
+    test_data=[[
+        data.sepal_length,
+        data.sepal_width,
+        data.petal_length,
+        data.petal_width
+
+
+
+
+
+
+    ]]
+
+#predicting the class 
