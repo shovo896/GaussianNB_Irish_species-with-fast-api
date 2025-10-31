@@ -1,14 +1,5 @@
 from fastapi import FastAPI 
 import uvicorn 
-
-
-app=FastAPI()
-
-@app.get('/') 
-def main() : 
-    return {'message': 'I love you dutee'}
-
-@app.get('/{name}')
-
-def hello_name(name:str) : 
-    return {'message': f'welcome to my world!,{name}'}
+from sklearn.datasets import load_iris 
+from sklearn.naive_bayes import GaussianNB 
+from pydantic import BaseModel 
