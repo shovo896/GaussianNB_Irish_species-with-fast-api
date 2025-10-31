@@ -1,42 +1,42 @@
-from fastapi import FastAPI 
-import uvicorn 
-from sklearn.datasets import load_iris 
-from sklearn.naive_bayes import GaussianNB 
+from fastapi import FastAPI
+import uvicorn
+from sklearn.datasets import load_iris
+from sklearn.naive_bayes import GaussianNB
 from pydantic import BaseModel
-app=FastAPI()
 
-class request_body(BaseModel) : 
-    sepal_length : float 
-    sepal_width  : float 
-    petal_length : float 
-    petal_width : float 
+app = FastAPI()
 
-iris=load_iris()
-#Getting our features and targets 
+# Define input schema
+class RequestBody(BaseModel):
+    sepal_length: float
+    sepal_width: float
+    petal_length: float
+    petal_width: float
 
-x=iris.data 
-y=iris.target
+# Load dataset and train model
+iris = load_iris()
+X = iris.data
+y = iris.target
 
-clf=GaussianNB()
-clf.fit(x,y)
+clf = GaussianNB()
+clf.fit(X, y)
 
-#creating anj end point to receive the data 
-@app.post('/predict')
-
-def predict(data:request_body) : 
-    test_data=[[
+# Endpoint for prediction
+@app.post("/predict")
+def predict(data: RequestBody):
+    test_data = [[
         data.sepal_length,
         data.sepal_width,
         data.petal_length,
         data.petal_width
-
-
-
-
-
-
     ]]
 
-#predicting the class 
-class_idx=clf.predict(test_data)[0]
-return { 'class ' : iris.target_names[class_idx]}
+    # Predict class
+    class_idx = clf.predict(test_data)[0]
+    predicted_class = iris.target_names[class_idx]
+
+    return {"class": predicted_class}
+
+# Run server
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
