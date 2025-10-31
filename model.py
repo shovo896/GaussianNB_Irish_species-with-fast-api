@@ -1,41 +1,46 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 import uvicorn
 from sklearn.datasets import load_iris
 from sklearn.naive_bayes import GaussianNB
-from pydantic import BaseModel
 
+# Initialize app and templates
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
-# Define input schema
-class RequestBody(BaseModel):
-    sepal_length: float
-    sepal_width: float
-    petal_length: float
-    petal_width: float
-
-# Load dataset and train model
+# Load dataset & train model
 iris = load_iris()
 X = iris.data
 y = iris.target
-
 clf = GaussianNB()
 clf.fit(X, y)
 
-# Endpoint for prediction
-@app.post("/predict")
-def predict(data: RequestBody):
-    test_data = [[
-        data.sepal_length,
-        data.sepal_width,
-        data.petal_length,
-        data.petal_width
-    ]]
+# Home route
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "result": None})
 
-    # Predict class
+# Predict route
+@app.post("/predict", response_class=HTMLResponse)
+def predict(
+    request: Request,
+    sepal_length: float = Form(...),
+    sepal_width: float = Form(...),
+    petal_length: float = Form(...),
+    petal_width: float = Form(...)
+):
+    test_data = [[sepal_length, sepal_width, petal_length, petal_width]]
     class_idx = clf.predict(test_data)[0]
     predicted_class = iris.target_names[class_idx]
 
-    return {"class": predicted_class}
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "result": f"Predicted Class: {predicted_class.capitalize()}"
+        }
+    )
 
 # Run server
 if __name__ == "__main__":
