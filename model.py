@@ -1,1 +1,10 @@
-print('hello world')
+from fastapi import FastAPI 
+import uvicorn 
+
+
+app=FastAPI()
+
+@app.get('/') 
+def main() : 
+    return {'message': 'I love you dutee'}
+
